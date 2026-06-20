@@ -441,10 +441,8 @@ Loan Tenure: ${res.tenureYears} Years
 Monthly EMI: ${formatRupee(res.monthlyEmi)}
 Total Interest Payable: ${formatRupee(res.totalInterest)}
 Total Amount Payable: ${formatRupee(res.totalPayment)}
-----------------------------
-Calculated by: Shreyansh Singh
-Email: shreyansh.singh@digitalheroes.co
-Verified: Built for Digital Heroes`;
+----------------------------`;
+
 
         navigator.clipboard.writeText(summaryText)
             .then(() => {
