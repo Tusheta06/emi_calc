@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional EMI Calculator | Loan & Repayment Planner</title>
+    
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="Calculate your monthly EMI, total interest, and total payable amount. View interactive repayment charts, monthly amortization schedules, and export professional PDF reports.">
+    <meta name="keywords" content="EMI Calculator, Loan Calculator, Home Loan EMI, Personal Loan EMI, Amortization Schedule, Loan Planner, Shreyansh Singh, Digital Heroes">
+    <meta name="author" content="Shreyansh Singh">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- jsPDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation / Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-area">
+                    <div class="logo-icon">
+                        <i data-lucide="calculator"></i>
+                    </div>
+                    <div>
+                        <h1>EMIWISE</h1>
+                        <p class="subtitle">Professional Loan & EMI Planner</p>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <!-- Sivagami R Profile Badge -->
+                    <div class="profile-badge">
+                        <span class="profile-name">Sivagami R</span>
+                        <span class="profile-role">Digital Heroes Partner</span>
+                    </div>
+                    
+                    <!-- Theme Toggle Button -->
+                    <button id="themeToggleBtn" class="icon-btn" aria-label="Toggle dark mode">
+                        <i data-lucide="moon" class="theme-icon-dark"></i>
+                        <i data-lucide="sun" class="theme-icon-light" style="display: none;"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Layout -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Side: Inputs Card -->
+            <section class="card input-card">
+                <div class="card-header">
+                    <h2 class="card-title"><i data-lucide="sliders" class="header-icon"></i>Loan Parameters</h2>
+                    <p class="card-subtitle">Adjust sliders or type values to calculate monthly payments.</p>
+                </div>
+                
+                <form id="emiForm" class="inputs-form" onsubmit="event.preventDefault();">
+                    <!-- Loan Amount Input Group -->
+                    <div class="input-group">
+                        <div class="input-label-row">
+                            <label for="loanAmount">Loan Amount (₹)</label>
+                            <div class="input-wrapper-text">
+                                <span class="input-prefix">₹</span>
+                                <input type="text" id="loanAmountText" value="10,00,000" aria-label="Loan Amount Text Input">
+                            </div>
+                        </div>
+                        <input type="range" id="loanAmount" min="10000" max="100000000" step="5000" value="1000000" class="slider" aria-label="Loan Amount Slider">
+                        <div class="slider-limits">
+                            <span>₹10K</span>
+                            <span id="loanAmountFormattedMax">₹10 Cr</span>
+                        </div>
+                        <div class="error-msg" id="loanAmountError"></div>
+                    </div>
+
+                    <!-- Interest Rate Input Group -->
+                    <div class="input-group">
+                        <div class="input-label-row">
+                            <label for="interestRate">Annual Interest Rate (%)</label>
+                            <div class="input-wrapper-text">
+                                <input type="number" id="interestRateText" value="8.5" step="0.05" min="1" max="30" aria-label="Annual Interest Rate Text Input">
+                                <span class="input-suffix">%</span>
+                            </div>
+                        </div>
+                        <input type="range" id="interestRate" min="1" max="30" step="0.05" value="8.5" class="slider" aria-label="Annual Interest Rate Slider">
+                        <div class="slider-limits">
+                            <span>1%</span>
+                            <span>30%</span>
+                        </div>
+                        <div class="error-msg" id="interestRateError"></div>
+                    </div>
+
+                    <!-- Loan Tenure Input Group -->
+                    <div class="input-group">
+                        <div class="input-label-row">
+                            <label for="loanTenure">Loan Tenure (Years)</label>
+                            <div class="input-wrapper-text">
+                                <input type="number" id="loanTenureText" value="15" step="1" min="1" max="40" aria-label="Loan Tenure Text Input">
+                                <span class="input-suffix">Yrs</span>
+                            </div>
+                        </div>
+                        <input type="range" id="loanTenure" min="1" max="40" step="1" value="15" class="slider" aria-label="Loan Tenure Slider">
+                        <div class="slider-limits">
+                            <span>1 Yr</span>
+                            <span>40 Yrs</span>
+                        </div>
+                        <div class="error-msg" id="loanTenureError"></div>
+                    </div>
+
+                    <!-- Form CTA Buttons -->
+                    <div class="form-actions">
+                        <button type="button" id="resetBtn" class="btn btn-secondary">
+                            <i data-lucide="rotate-ccw"></i> Reset
+                        </button>
+                        <button type="submit" id="calculateBtn" class="btn btn-primary">
+                            <i data-lucide="calculator"></i> Calculate
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Right Side: Results and Chart Section -->
+            <section class="results-container">
+                
+                <!-- Results Cards Row -->
+                <div class="results-cards-grid">
+                    <!-- Monthly EMI Card -->
+                    <div class="result-card emi-card">
+                        <div class="result-card-header">
+                            <span>Monthly EMI</span>
+                            <i data-lucide="credit-card" class="card-icon"></i>
+                        </div>
+                        <div class="result-value" id="monthlyEmiVal">₹9,847</div>
+                        <p class="result-note">Equated Monthly Installment</p>
+                    </div>
+                    
+                    <!-- Total Interest Card -->
+                    <div class="result-card interest-card">
+                        <div class="result-card-header">
+                            <span>Total Interest</span>
+                            <i data-lucide="percent" class="card-icon"></i>
+                        </div>
+                        <div class="result-value" id="totalInterestVal">₹7,72,534</div>
+                        <p class="result-note">Interest Payable Over Tenure</p>
+                    </div>
+
+                    <!-- Total Amount Card -->
+                    <div class="result-card amount-card">
+                        <div class="result-card-header">
+                            <span>Total Payment</span>
+                            <i data-lucide="banknote" class="card-icon"></i>
+                        </div>
+                        <div class="result-value" id="totalAmountVal">₹17,72,534</div>
+                        <p class="result-note">Principal + Interest Amount</p>
+                    </div>
+                </div>
+
+                <!-- Visual Chart Card -->
+                <div class="card chart-card">
+                    <div class="chart-header">
+                        <h3><i data-lucide="pie-chart" class="header-icon"></i>EMI Breakdown</h3>
+                        <div class="chart-legend">
+                            <span class="legend-item"><span class="legend-color principal-color"></span>Principal</span>
+                            <span class="legend-item"><span class="legend-color interest-color"></span>Interest</span>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <div class="chart-wrapper">
+                            <canvas id="emiChart"></canvas>
+                        </div>
+                        <div class="chart-details">
+                            <div class="detail-row">
+                                <span>Principal Amount</span>
+                                <strong id="chartPrincipalText">₹10,00,000</strong>
+                            </div>
+                            <div class="detail-row">
+                                <span>Interest Amount</span>
+                                <strong id="chartInterestText">₹7,72,534</strong>
+                            </div>
+                            <hr class="divider">
+                            <div class="detail-row total-row">
+                                <span>Total Payable</span>
+                                <strong id="chartTotalText">₹17,72,534</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button Controls -->
+                <div class="action-buttons-row">
+                    <button id="copyBtn" class="btn btn-secondary-outline">
+                        <i data-lucide="copy"></i> Copy Results
+                    </button>
+                    <button id="downloadPdfBtn" class="btn btn-secondary-outline">
+                        <i data-lucide="file-down"></i> Download PDF Report
+                    </button>
+                    <!-- Mandatory Digital Heroes CTA -->
+                    <a href="https://digitalheroesco.com" target="_blank" class="btn btn-action-hero" id="digitalHeroesBtn">
+                        <i data-lucide="sparkles"></i> Built for Digital Heroes
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <!-- Amortization Schedule Section (Collapsible Accordion/Card) -->
+        <section class="card amortization-card">
+            <div class="card-header amortization-header-toggle" id="tableHeaderToggle" role="button" tabindex="0">
+                <div class="header-title-wrapper">
+                    <h2 class="card-title">
+                        <i data-lucide="calendar" class="header-icon"></i>Amortization Schedule
+                    </h2>
+                    <p class="card-subtitle">Month-by-month repayment breakdown showing principal and interest allocations.</p>
+                </div>
+                <div class="amortization-toggle-icon">
+                    <i data-lucide="chevron-down" id="toggleChevron"></i>
+                </div>
+            </div>
+            
+            <div class="amortization-body collapsed" id="amortizationBody">
+                <div class="table-search-row">
+                    <p class="schedule-summary-info">Showing amortization details for <span id="summaryMonths">180</span> payments.</p>
+                    <div class="search-wrapper">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="number" id="searchMonth" placeholder="Go to month (e.g. 12)..." min="1" max="480">
+                    </div>
+                </div>
+
+                <div class="table-responsive-container">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>EMI Payment</th>
+                                <th>Principal Paid</th>
+                                <th>Interest Paid</th>
+                                <th>Remaining Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleTableBody">
+                            <!-- Populated dynamically via script.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer Segment -->
+        <footer class="app-footer">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <h3 class="footer-logo">FinCalc</h3>
+                    <p class="footer-desc">A premium portfolio project displaying advanced calculation features, dynamic charts, and professional PDF reports.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Creator Profile</h4>
+                    <ul>
+                        <li><i data-lucide="user" class="footer-icon"></i> Name: <strong>Tusheta Raman</strong></li>
+                        <li><i data-lucide="mail" class="footer-icon"></i> Email: <a href="mailto:ramantusheta@gamil.com">ramantusheta@gamil.com</a></li>
+                        <li><i data-lucide="github" class="footer-icon"></i> Repository: <a href="#" onclick="event.preventDefault(); alert('GitHub repo link is a placeholder.');">github.com/shreyansh-singh/emi-calculator</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Tusheta Raman. All rights reserved. Designed and developed for digital validation.</p>
+                <div class="footer-badge">
+                    <span>Tusheta Raman • ramantusheta@gmail.com</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Notification Toast Element -->
+    <div id="toast" class="toast" role="alert" aria-live="polite">
+        <i data-lucide="check-circle" class="toast-icon"></i>
+        <span id="toastMsg">Results copied successfully!</span>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+</html>
