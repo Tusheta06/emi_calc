@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 10. Copy Results Functionality
     elements.copyBtn.addEventListener('click', () => {
         const res = calculationResults;
-        const summaryText = `--- FinCalc Loan Summary ---
+        const summaryText = `--- EMIWISE Loan Summary ---
 Loan Principal: ${formatRupee(res.principal)}
 Annual Interest Rate: ${res.rate}%
 Loan Tenure: ${res.tenureYears} Years
